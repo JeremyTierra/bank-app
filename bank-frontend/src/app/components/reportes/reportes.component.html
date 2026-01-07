@@ -1,0 +1,114 @@
+<div class="container">
+  <h2><span class="material-icons icon-title">assessment</span>Reportes de Movimientos</h2>
+
+  <div *ngIf="mensaje" class="mensaje" [class.mensaje-success]="mensajeTipo === 'success'" [class.mensaje-error]="mensajeTipo === 'error'">
+    {{ mensaje }}
+  </div>
+
+  <!-- Filtros -->
+  <div class="form-section">
+    <h3>Generar Reporte</h3>
+    <form (ngSubmit)="generarReporte()" class="form-grid">
+      <div class="form-group">
+        <label>Cliente *</label>
+        <select [(ngModel)]="clienteSeleccionado" name="cliente" required>
+          <option [ngValue]="null">Seleccione un cliente...</option>
+          <option *ngFor="let cliente of clientes" [ngValue]="cliente.clienteId">
+            {{ cliente.nombre }} - {{ cliente.identificacion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha Inicio *</label>
+        <input type="date" [(ngModel)]="fechaInicio" name="fechaInicio" required>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha Fin *</label>
+        <input type="date" [(ngModel)]="fechaFin" name="fechaFin" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="cargando">
+          <span class="material-icons">{{ cargando ? 'hourglass_empty' : 'search' }}</span>
+          {{ cargando ? 'Generando...' : 'Generar Reporte' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="exportarPDF()" [disabled]="reporteData.length === 0">
+          <span class="material-icons">picture_as_pdf</span>
+          Descargar PDF
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="exportarJSON()" [disabled]="reporteData.length === 0">
+          <span class="material-icons">save</span>
+          Descargar JSON
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Resultados -->
+  <div class="table-section" *ngIf="reporteData.length > 0">
+    <h3>Resultados ({{ reporteData.length }} movimientos)</h3>
+    
+    <div class="summary-cards">
+      <div class="summary-card summary-card-success">
+        <div class="summary-label">Total Créditos</div>
+        <div class="summary-value">
+          ${{ totalCreditos | number:'1.2-2' }}
+        </div>
+      </div>
+      <div class="summary-card summary-card-danger">
+        <div class="summary-label">Total Débitos</div>
+        <div class="summary-value">
+          ${{ totalDebitos | number:'1.2-2' }}
+        </div>
+      </div>
+      <div class="summary-card summary-card-info">
+        <div class="summary-label">Balance</div>
+        <div class="summary-value">
+          ${{ (totalCreditos - totalDebitos) | number:'1.2-2' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Número Cuenta</th>
+            <th>Tipo</th>
+            <th>Saldo Inicial</th>
+            <th>Estado</th>
+            <th>Movimiento</th>
+            <th>Saldo Disponible</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of reporteData">
+            <td>{{ item.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ item.cliente }}</td>
+            <td>{{ item.numeroCuenta }}</td>
+            <td>{{ item.tipo }}</td>
+            <td>${{ item.saldoInicial | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [class.badge-active]="item.estado" [class.badge-inactive]="!item.estado">
+                {{ item.estado ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td [class.text-negative]="item.movimiento < 0" [class.text-positive]="item.movimiento > 0">
+              ${{ item.movimiento | number:'1.2-2' }}
+            </td>
+            <td>${{ item.saldoDisponible | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="reporteData.length === 0 && !cargando" style="text-align: center; padding: 3rem; color: #999;">
+    <span class="material-icons" style="font-size: 5rem; margin-bottom: 1rem; color: #ccc;">assessment</span>
+    <p>Seleccione un cliente y rango de fechas para generar un reporte</p>
+  </div>
+</div>

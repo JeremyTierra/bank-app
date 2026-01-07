@@ -1,0 +1,44 @@
+<div class="app-container">
+  <app-loading-spinner></app-loading-spinner>
+  
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1 class="sidebar-title">Bank App</h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/home" routerLinkActive="active" class="nav-item">
+        <span class="material-icons nav-icon">home</span>
+        <span class="nav-text">Inicio</span>
+      </a>
+      <a routerLink="/clientes" routerLinkActive="active" class="nav-item">
+        <span class="material-icons nav-icon">group</span>
+        <span class="nav-text">Clientes</span>
+      </a>
+      <a routerLink="/cuentas" routerLinkActive="active" class="nav-item">
+        <span class="material-icons nav-icon">account_balance</span>
+        <span class="nav-text">Cuentas</span>
+      </a>
+      <a routerLink="/movimientos" routerLinkActive="active" class="nav-item">
+        <span class="material-icons nav-icon">swap_horiz</span>
+        <span class="nav-text">Movimientos</span>
+      </a>
+      <a routerLink="/reportes" routerLinkActive="active" class="nav-item">
+        <span class="material-icons nav-icon">assessment</span>
+        <span class="nav-text">Reportes</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <p>&copy; 2026 Bank App</p>
+    </div>
+  </aside>
+
+  <div class="main-wrapper">
+    <header class="top-header">
+      <h2>{{ title }}</h2>
+    </header>
+    
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

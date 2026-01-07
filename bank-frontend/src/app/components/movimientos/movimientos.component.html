@@ -1,0 +1,85 @@
+<div class="container">
+  <h2>Gestión de Movimientos</h2>
+
+  <div *ngIf="mensaje" class="mensaje" [class.mensaje-success]="mensajeTipo === 'success'" [class.mensaje-error]="mensajeTipo === 'error'">
+    {{ mensaje }}
+  </div>
+
+  <div class="search-box">
+    <input type="text" [(ngModel)]="busqueda" placeholder="Buscar movimiento..." class="search-input">
+  </div>
+
+  <div class="form-section">
+    <h3>Nuevo Movimiento</h3>
+    <form (ngSubmit)="realizarMovimiento()" class="form-grid">
+      <div class="form-group">
+        <label>Cuenta *</label>
+        <select [(ngModel)]="nuevoMovimiento.numeroCuenta" name="numeroCuenta" required>
+          <option value="">Seleccione una cuenta...</option>
+          <option *ngFor="let cuenta of cuentas" [value]="cuenta.numeroCuenta">
+            {{ cuenta.numeroCuenta }} - {{ cuenta.clienteNombre }} ({{ cuenta.tipoCuenta }})
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de Movimiento *</label>
+        <select [(ngModel)]="nuevoMovimiento.tipoMovimiento" name="tipoMovimiento" required (change)="onTipoMovimientoChange()">
+          <option value="">Seleccione...</option>
+          <option value="Deposito">Depósito</option>
+          <option value="Retiro">Retiro</option>
+          <option value="Credito">Crédito</option>
+          <option value="Debito">Débito</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Valor *</label>
+        <input type="number" [(ngModel)]="nuevoMovimiento.valor" name="valor" required step="0.01" (change)="onTipoMovimientoChange()">
+        <small>{{ nuevoMovimiento.valor < 0 ? 'Débito/Retiro' : 'Crédito/Depósito' }}</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Realizar Movimiento</button>
+        <button type="button" class="btn btn-secondary" (click)="limpiarFormulario()">Limpiar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-section">
+    <h3>Historial de Movimientos ({{ movimientosFiltrados.length }})</h3>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Cuenta</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Saldo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let mov of movimientosFiltrados">
+            <td>{{ mov.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ mov.numeroCuenta }}</td>
+            <td>{{ mov.tipoMovimiento }}</td>
+            <td [class.text-negative]="mov.valor < 0" [class.text-positive]="mov.valor > 0">
+              ${{ mov.valor | number:'1.2-2' }}
+            </td>
+            <td>${{ mov.saldo | number:'1.2-2' }}</td>
+            <td class="actions">
+              <button class="btn btn-delete" (click)="eliminarMovimiento(mov.id!)">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="movimientosFiltrados.length === 0">
+            <td colspan="6" class="no-data">No hay movimientos registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

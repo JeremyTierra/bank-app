@@ -1,0 +1,101 @@
+<div class="container">
+  <h2>Gestión de Cuentas</h2>
+
+  <div *ngIf="mensaje" class="mensaje" [class.mensaje-success]="mensajeTipo === 'success'" [class.mensaje-error]="mensajeTipo === 'error'">
+    {{ mensaje }}
+  </div>
+
+  <div class="search-box">
+    <input type="text" [(ngModel)]="busqueda" placeholder="Buscar cuenta..." class="search-input">
+  </div>
+
+  <div class="form-section">
+    <h3>{{ modoEdicion ? 'Editar Cuenta' : 'Nueva Cuenta' }}</h3>
+    <form (ngSubmit)="guardarCuenta()" class="form-grid">
+      <div class="form-group">
+        <label>Número de Cuenta *</label>
+        <input type="text" [(ngModel)]="nuevaCuenta.numeroCuenta" name="numeroCuenta" required [disabled]="modoEdicion">
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de Cuenta *</label>
+        <select [(ngModel)]="nuevaCuenta.tipoCuenta" name="tipoCuenta" required>
+          <option value="">Seleccione...</option>
+          <option value="Ahorro">Ahorro</option>
+          <option value="Corriente">Corriente</option>
+          <option value="Ahorros">Ahorros</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Saldo Inicial *</label>
+        <input type="number" [(ngModel)]="nuevaCuenta.saldoInicial" name="saldoInicial" required step="0.01">
+      </div>
+
+      <div class="form-group">
+        <label>Cliente *</label>
+        <select [(ngModel)]="nuevaCuenta.clienteId" name="clienteId" required [disabled]="modoEdicion">
+          <option [value]="0">Seleccione un cliente...</option>
+          <option *ngFor="let cliente of clientes" [value]="cliente.clienteId">
+            {{ cliente.nombre }} - {{ cliente.identificacion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Estado</label>
+        <select [(ngModel)]="nuevaCuenta.estado" name="estado">
+          <option [value]="true">Activo</option>
+          <option [value]="false">Inactivo</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Actualizar' : 'Guardar' }}</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelar()" *ngIf="modoEdicion">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-section">
+    <h3>Lista de Cuentas ({{ cuentasFiltradas.length }})</h3>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Tipo</th>
+            <th>Cliente</th>
+            <th>Saldo Inicial</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cuenta of cuentasFiltradas">
+            <td>{{ cuenta.numeroCuenta }}</td>
+            <td>{{ cuenta.tipoCuenta }}</td>
+            <td>{{ cuenta.clienteNombre }}</td>
+            <td>${{ cuenta.saldoInicial | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [class.badge-active]="cuenta.estado" [class.badge-inactive]="!cuenta.estado">
+                {{ cuenta.estado ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="actions">
+              <button class="btn btn-edit" (click)="seleccionarCuenta(cuenta)">
+                <span class="material-icons">edit</span>
+              </button>
+              <button class="btn btn-delete" (click)="eliminarCuenta(cuenta.id!)">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="cuentasFiltradas.length === 0">
+            <td colspan="6" class="no-data">No se encontraron cuentas</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
